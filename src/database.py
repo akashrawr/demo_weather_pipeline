@@ -1,31 +1,23 @@
 import os
-import time
-import psycopg2
 from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from logger import logger
 
 load_dotenv()
 
-def get_connection(retries=10,delay=5):
-    attempt = 1
-    while attempt <= retries:
-        try:
-            logger.info(f"Connecting to PostgreSQL (attempt {attempt}/{retries})")
-            conn = psycopg2.connect(
-                host=os.getenv("DB_HOST"),
-                port=os.getenv("DB_PORT"),
-                database=os.getenv("DB_NAME"),
-                user=os.getenv("DB_USER"),
-                password=os.getenv("DB_PASSWORD"),
-            )
-            logger.info("PostgreSQL connection successful")
-            return conn
+DATABASE_URL = (
+    f"postgresql://"
+    f"{os.getenv('DB_USER')}:"
+    f"{os.getenv('DB_PASSWORD')}@"
+    f"{os.getenv('DB_HOST')}:"
+    f"{os.getenv('DB_PORT')}/"
+    f"{os.getenv('DB_NAME')}"
+)
 
-        except psycopg2.Error as e:
-            logger.warning(f"Database connection failed: {e}")
-            if attempt == retries:
-                logger.exception("Could not connect to PostgreSQL")
-                raise
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-            time.sleep(delay)
-            attempt += 1
+def get_session():
+    logger.info("Creating database session")
+    return SessionLocal()

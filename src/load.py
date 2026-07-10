@@ -1,15 +1,12 @@
-from database import get_connection
-import psycopg2
+from sqlalchemy import text
+from database import get_session
 from logger import logger
 
 def load_weather(weather):
-    conn = None
-
+    session = None
     try:
-        conn = get_connection()
-        cursor = conn.cursor()
-
-        query = """
+        session = get_session()
+        query = text("""
         INSERT INTO weather
         (
             city,
@@ -20,29 +17,28 @@ def load_weather(weather):
             weather_code,
             observation_time
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s);
-        """
 
-        cursor.execute(
-            query,
-            (
-                weather["city"],
-                weather["latitude"],
-                weather["longitude"],
-                weather["temperature"],
-                weather["wind_speed"],
-                weather["weather_code"],
-                weather["observation_time"],
-            ),
+        VALUES
+        (
+            :city,
+            :latitude,
+            :longitude,
+            :temperature,
+            :wind_speed,
+            :weather_code,
+            :observation_time
         )
+        """)
 
-        conn.commit()
+        session.execute(query, weather)
+        session.commit()
         logger.info(f"Inserted weather data for {weather['city']}")
 
-    except Exception as e:
-        logger.error(f"Database insert failed: {e}")
+    except Exception:
+        logger.exception("Database insert failed")
+        if session:
+            session.rollback()
 
     finally:
-        if conn:
-            cursor.close()
-            conn.close()
+        if session:
+            session.close()
