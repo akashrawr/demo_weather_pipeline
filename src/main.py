@@ -19,13 +19,14 @@ def main():
             )
 
             if raw_data is None:
+                logger.warning(f"Skipping {city} because no weather data was received")
                 continue
 
             weather = transform_weather(raw_data, city)
             load_weather(weather)
 
-        except Exception as e:
-            logger.error(f"Pipeline failed for {city}: {e}")
+        except Exception:
+            logger.exception(f"Pipeline failed for {city}")
 
     logger.info(f"Pipeline completed")
 
