@@ -1,0 +1,6 @@
+.history
+.venv
+.git
+__pycache__
+logs
+.env
