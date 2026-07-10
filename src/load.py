@@ -1,6 +1,6 @@
 from database import get_connection
 import psycopg2
-
+from logger import logger
 
 def load_weather(weather):
     conn = None
@@ -22,6 +22,7 @@ def load_weather(weather):
         )
         VALUES (%s, %s, %s, %s, %s, %s, %s);
         """
+
         cursor.execute(
             query,
             (
@@ -36,11 +37,10 @@ def load_weather(weather):
         )
 
         conn.commit()
+        logger.info(f"Inserted weather data for {weather['city']}")
 
-        print("Weather inserted successfully!")
-
-    except psycopg2.Error as e:
-        print(f"Database Error: {e}")
+    except Exception as e:
+        logger.error(f"Database insert failed: {e}")
 
     finally:
         if conn:
