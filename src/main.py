@@ -3,6 +3,7 @@ from src.transform import transform_weather
 from src.load import load_weather
 from src.locations import LOCATIONS
 from src.logger import logger
+from src.quality import validate_weather
 
 def main():
     logger.info("Starting Weather ETL Pipeline")
@@ -23,7 +24,11 @@ def main():
                 continue
 
             weather = transform_weather(raw_data, city)
-            load_weather(weather)
+
+            if validate_weather(weather):
+                load_weather(weather)
+            else:
+                logger.warning("Skipping invalid weather record")
 
         except Exception:
             logger.exception(f"Pipeline failed for {city}")
