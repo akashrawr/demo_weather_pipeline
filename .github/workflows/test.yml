@@ -9,6 +9,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://weather_user:weather_password@localhost:5432/weather_test
     services:
       postgres:
         image: postgres:16
