@@ -1,44 +1,46 @@
-from sqlalchemy import text
+from datetime import datetime
 from src.database import get_session
+from src.models import Weather, Location
 from src.logger import logger
 
-def load_weather(weather):
+def load_weather(weather_data):
     session = None
     try:
         session = get_session()
-        query = text("""
-        INSERT INTO weather
-        (
-            city,
-            latitude,
-            longitude,
-            temperature,
-            wind_speed,
-            weather_code,
-            observation_time
+        location = (
+            session.query(Location)
+            .filter_by(
+                city=weather_data["city"]
+            )
+            .first()
         )
 
-        VALUES
-        (
-            :city,
-            :latitude,
-            :longitude,
-            :temperature,
-            :wind_speed,
-            :weather_code,
-            :observation_time
-        )
-        """)
+        if not location:
+            location = Location(
+                city=weather_data["city"],
+                latitude=weather_data["latitude"],
+                longitude=weather_data["longitude"]
+            )
+            session.add(location)
+            session.flush()
 
-        session.execute(query, weather)
+        weather = Weather(
+            location_id=location.id,
+            temperature=weather_data["temperature"],
+            wind_speed=weather_data["wind_speed"],
+            weather_code=weather_data["weather_code"],
+            observation_time=datetime.fromisoformat(
+                weather_data["observation_time"]
+            )
+        )
+        session.add(weather)
         session.commit()
-        logger.info(f"Inserted weather data for {weather['city']}")
+        logger.info(f"Inserted weather for {location.city}")
 
     except Exception:
-        logger.exception("Database insert failed")
+        logger.exception("Failed loading weather data")
         if session:
             session.rollback()
-
     finally:
         if session:
             session.close()
