@@ -9,6 +9,10 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    env:
+      POSTGRES_USER: weather_user
+      POSTGRES_PASSWORD: weather_password
+      POSTGRES_DB: weather_db
     steps:
 
       - name: Checkout repository
@@ -32,7 +36,7 @@ jobs:
 
       - name: Check ETL logs
         run:
-          docker compose logs weather-etl
+          docker compose logs etl
 
       - name: Stop containers
         if: always()
