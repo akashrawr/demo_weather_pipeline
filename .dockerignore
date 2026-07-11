@@ -1,6 +1,6 @@
-.history
 .venv
 .git
 __pycache__
-logs
 .env
+logs
+.pytest_cache

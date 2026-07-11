@@ -2,5 +2,7 @@
 .venv
 src/__pycache__
 tests/__pycache__
+migrations/__pycache__
+migrations/versions
 .env
 logs/
