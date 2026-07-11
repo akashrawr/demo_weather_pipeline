@@ -1,0 +1,40 @@
+name: Docker CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker images
+        run:
+          docker compose build
+
+      - name: Start containers
+        run:
+          docker compose up -d
+
+      - name: Wait for services
+        run:
+          sleep 20
+
+      - name: Check running containers
+        run:
+          docker compose ps
+
+      - name: Check ETL logs
+        run:
+          docker compose logs weather-etl
+
+      - name: Stop containers
+        if: always()
+        run:
+          docker compose down
