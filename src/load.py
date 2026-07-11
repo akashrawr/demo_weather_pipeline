@@ -1,6 +1,6 @@
 from sqlalchemy import text
-from database import get_session
-from logger import logger
+from src.database import get_session
+from src.logger import logger
 
 def load_weather(weather):
     session = None

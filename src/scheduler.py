@@ -1,6 +1,6 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
-from main import main
-from logger import logger
+from src.main import main
+from src.logger import logger
 
 scheduler = BlockingScheduler()
 

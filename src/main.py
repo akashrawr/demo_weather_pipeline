@@ -1,8 +1,8 @@
-from extract import get_weather
-from transform import transform_weather
-from load import load_weather
-from locations import LOCATIONS
-from logger import logger
+from src.extract import get_weather
+from src.transform import transform_weather
+from src.load import load_weather
+from src.locations import LOCATIONS
+from src.logger import logger
 
 def main():
     logger.info("Starting Weather ETL Pipeline")
