@@ -8,6 +8,7 @@ import os
 import sys
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+from src.database import Base
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -24,21 +25,11 @@ import os
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-DATABASE_URL = (
-    f"postgresql://"
-    f"{os.getenv('DB_USER')}:"
-    f"{os.getenv('DB_PASSWORD')}@"
-    f"{os.getenv('DB_HOST')}:"
-    f"{os.getenv('DB_PORT')}/"
-    f"{os.getenv('DB_NAME')}"
-)
-
-config.set_main_option("sqlalchemy.url",DATABASE_URL)
-
-database_url = os.getenv(
+DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://weather_user:weather_password@localhost:5432/weather_test"
+    "postgresql://weather_user:weather_password@localhost:5432/weather_db"
 )
+config.set_main_option("sqlalchemy.url",DATABASE_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
